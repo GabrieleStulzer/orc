@@ -36,6 +36,13 @@ def rk3(x, h, u, t, ode):
 
 def rk4(x, h, u, t, ode, jacobian=False):
     if(not jacobian):
+        k1 = ode.f(x, u, t)
+        k2 = ode.f(x + 1/2*h*k1, u, t+1/2*h)
+        k3 = ode.f(x + 1/2*h*k2, u, t+1/2*h)
+        k4 = ode.f(x + h*k3, u, t+h)
+
+        dx = 1/6 * (k1 + 2*k2 + 2*k3 + k4)
+        x_next = x + h*dx
         return x_next, dx
  
     return x_next, dx, phi_x, phi_u

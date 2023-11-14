@@ -154,8 +154,8 @@ if __name__=='__main__':
     integrators = []
     integrators += [{'scheme': 'RK-4',      'ndt': 1000}]    # used as ground truth
     integrators += [{'scheme': 'RK-1',      'ndt': 12}]
-    integrators += [{'scheme': 'RK-2',      'ndt': 6}]
-    integrators += [{'scheme': 'RK-3',      'ndt': 4}]
+    # integrators += [{'scheme': 'RK-2',      'ndt': 6}]
+    # integrators += [{'scheme': 'RK-3',      'ndt': 4}]
     integrators += [{'scheme': 'RK-4',      'ndt': 3}]
     
         
