@@ -7,7 +7,7 @@ Created on Thu Apr 18 09:47:07 2019
 
 import numpy as np
 
-TRACK_TRAJ = 0
+TRACK_TRAJ = 1
 
 np.set_printoptions(precision=3, linewidth=200, suppress=True)
 LINE_WIDTH = 110
@@ -34,6 +34,6 @@ model_variation = 40.0
 
 use_viewer = 1
 which_viewer = "no_gepetto"
-simulate_real_time = 1          # flag specifying whether simulation should be real time or as fast as possible
+simulate_real_time = 0         # flag specifying whether simulation should be real time or as fast as possible
 PRINT_T = 10                   # print some info every PRINT_T seconds
 DISPLAY_T = 0.02              # update robot configuration in viwewer every DISPLAY_T seconds

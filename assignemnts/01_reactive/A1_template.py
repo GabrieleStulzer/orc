@@ -28,15 +28,23 @@ if conf.TRACK_TRAJ:
     tests += [{'controller': 'OSC', 'kp': 100,  'frequency': np.array([1.0, 1.0, 0.3]), 'friction': 2}]
     tests += [{'controller': 'IC',  'kp': 100,  'frequency': np.array([1.0, 1.0, 0.3]), 'friction': 2}]
 
-    #tests += [{'controller': 'OSC', 'kp': 100,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
-    #tests += [{'controller': 'IC',  'kp': 100,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+    tests += [{'controller': 'OSC', 'kp': 100,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+    tests += [{'controller': 'IC',  'kp': 100,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+   
+    # Tweak proportional gain
+    tests += [{'controller': 'OSC', 'kp': 500,  'frequency': np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+    tests += [{'controller': 'IC',  'kp': 500,  'frequency': np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+
+    # Tweak proportional gain at higher frequencies
+    tests += [{'controller': 'OSC', 'kp': 500,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
+    tests += [{'controller': 'IC',  'kp': 500,  'frequency': 3*np.array([1.0, 1.0, 0.3]), 'friction': 2}]
 else:
     tests = []
 
-    tests += [{'controller': 'IC_O_simpl',  'kp': 250,  'frequency': np.array([0.0, 0.0, 0.0]),  'friction': 0}]        
-    tests += [{'controller': 'IC_O_simpl_post',  'kp': 250,  'frequency': np.array([0.0, 0.0, 0.0]),'friction': 0}]    
-    tests += [{'controller': 'IC_O',  'kp': 250, 'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 0}]              
-    tests += [{'controller': 'IC_O_post',  'kp': 250, 'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 0}]         
+    # tests += [{'controller': 'IC_O_simpl',  'kp': 250,  'frequency': np.array([0.0, 0.0, 0.0]),  'friction': 0}]        
+    # tests += [{'controller': 'IC_O_simpl_post',  'kp': 250,  'frequency': np.array([0.0, 0.0, 0.0]),'friction': 0}]    
+    # tests += [{'controller': 'IC_O',  'kp': 250, 'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 0}]              
+    # tests += [{'controller': 'IC_O_post',  'kp': 250, 'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 0}]         
 
     tests += [{'controller': 'IC_O_simpl',  'kp': 250,'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 2}]        
     tests += [{'controller': 'IC_O_simpl_post',  'kp': 250,'frequency': np.array([0.0, 0.0, 0.0]), 'friction': 2}]       
@@ -137,37 +145,12 @@ for (test_id, test) in  enumerate(tests):
         #    dx[:,i] = J.dot(v[:,i])
         dJdq = robot.frameAcceleration(q[:,i], v[:,i], None, frame_id, False).linear
         
-        # implement the components needed for your control laws here
-        # ddx_fb = kp * (x_ref[:, i] - x[:, i]) + kd * (dx_ref[:, i] - dx[:, i])          # Feedback acceleration
-        # ddx_des[:,i] = ddx_ref[:, i] + ddx_fb                                           # Desired acceleration 
-        # Minv = inv(M)                                                                   # M^-1 
-        # J_Minv = J.dot(Minv)
-        # Lambda = inv(J_Minv.dot(J.T))
-
-        # mu = Lambda.dot(J_Minv.dot(h) - dJdq)
-        # #...
-        
-
-        # # secondary task here
-        # J_T_pinv = Lambda.dot(J_Minv)
-        # # J_T_mpinv = inv(J.T.dot(J)).dot(J.T)
-        # # Null space of pseudo inverse of JT
-        # NJ = np.eye(robot.nv) - J.T.dot(J_T_pinv)
-        # # Null space of pseudo inverse of JT
-        # # NJ_moore = np.eye(robot.nv) - J.T.dot(J_T_mpinv)
-        # # Let's choose ddq_pos_des to stabilize the initial joint configuration
-        # ddq_pos_des = kp_j*(conf.q0 - q[:, i]) + kd_j*v[:, i]
-        # # M*ddq_pos_des
-        # tau_0 = M.dot(ddq_pos_des)
-
         # implement your control law here
         ddx_fb = kp * (x_ref[:,i] - x[:,i]) + kd*(dx_ref[:,i] - dx[:,i])
         ddx_des[:,i] = ddx_ref[:,i] + ddx_fb
         Minv = inv(M)
         J_Minv = J.dot(Minv)
         Lambda = inv(J_Minv.dot(J.T))
-    #    if(not np.isfinite(Lambda).all()):
-    #    print('Eigenvalues J*Minv*J.T', np.linalg.eigvals(J_Minv.dot(J.T)))
         mu = Lambda.dot(J_Minv.dot(h) - dJdq)
         f = Lambda.dot(ddx_des[:,i]) + mu
         
@@ -178,31 +161,30 @@ for (test_id, test) in  enumerate(tests):
         tau_0 = M.dot(ddq_pos_des)
 
 
+        k = 8
 
         # # define the control laws here
         if(test['controller']=='IC_O_simpl'):
-            tau[:,i] = h + J.T.dot(8*ddx_fb)
+            tau[:,i] = h + J.T.dot(k*ddx_fb)
 
         elif(test['controller']=='IC_O_simpl_post'):
-            tau[:,i] = h + J.T.dot(8*ddx_fb) + NJ.dot(tau_0)
+            tau[:,i] = h + J.T.dot(k*ddx_fb) + NJ.dot(tau_0)
 
         elif(test['controller']=='IC_O'):
-            tau[:,i] = J.T.dot(8*ddx_fb + mu)
+            tau[:,i] = J.T.dot(ddx_fb + mu)
 
         elif(test['controller']=='IC_O_post'):                                                                 
-            tau[:,i] = h + J.T.dot(8*ddx_fb) + NJ.dot(tau_0)
+            tau[:,i] = J.T.dot(k*ddx_fb + mu) + NJ.dot(tau_0)
 
-        if(test['controller']=='OSC'):      # Operational Space Control
+        elif(test['controller']=='OSC'):      # Operational Space Control
             tau[:,i] = J.T.dot(f) + NJ.dot(tau_0 + h)
-#            tau[:,i] = h + J.T.dot(Lambda.dot(ddx_des[:,i] - dJdq)) + NJ.dot(tau_0)
 
         elif(test['controller']=='IC'):     # Impedence Control
-            tau[:,i] = h + J.T.dot(8*ddx_fb) + NJ.dot(tau_0)
-#            tau[:,i] -= J.T.dot(Lambda.dot(dJdq))
+            tau[:,i] = h + J.T.dot(k*ddx_fb) + NJ.dot(tau_0)
 
-        # else:
-        #     print('ERROR: Unknown controller', test['controller'])
-        #     sys.exit(0)
+        else:
+            print('ERROR: Unknown controller', test['controller'])
+            sys.exit(0)
         
         # send joint torques to simulator
         simu.simulate(tau[:,i], conf.dt, conf.ndt)
