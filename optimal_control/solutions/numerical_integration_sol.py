@@ -26,12 +26,28 @@ def rk1(x, h, u, t, ode, jacobian=False):
     return x_next, dx, phi_x, phi_u
 
 def rk2(x, h, u, t, ode):
+    k1 = ode.f(x,u,t)
+    k2 = ode.f(x + 1/2*h*k1,u,t+1/2*h)
+
+    dx = k2
+    x_next = x + h*dx
     return x_next, dx
 
 def rk2heun(x, h, u, t, ode):
+    k1 = ode.f(x,u,t)
+    k2 = ode.f(x + h*k1,u,t+h)
+
+    dx = 1/2 * (k1 + k2)
+    x_next = x + h*dx
     return x_next, dx
 
 def rk3(x, h, u, t, ode):
+    k1 = ode.f(x,u,t)
+    k2 = ode.f(x + 1/3*h*k1,u,t+1/3*h)
+    k3 = ode.f(x + 2/3*h*k2,u,t+2/3*h)
+
+    dx = 1/4 * (k1 + 0*k2 + 3*k3)
+    x_next = x + h*dx
     return x_next, dx
 
 def rk4(x, h, u, t, ode, jacobian=False):
