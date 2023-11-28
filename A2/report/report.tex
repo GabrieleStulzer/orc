@@ -1,0 +1,33 @@
+\documentclass[12pt]{article}
+ 
+\usepackage[margin=1in]{geometry} 
+\usepackage{amsmath,amsthm,amssymb}
+\usepackage{graphicx}
+\usepackage{subcaption}
+ 
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\begin{document}
+
+For the dynamics:
+
+\dot{x}_0 &= x_1 
+\dot{x}_1 &= -g\sin(x_0) + u 
+
+Let's calculate the Jacobians: ### Jacobian with respect to `x`:
+
+\frac{\partial f}{\partial x} = \begin{bmatrix} \frac{\partial \dot{x}_0}{\partial x_0} & \frac{\partial \dot{x}_0}{\partial x_1} \ \frac{\partial \dot{x}_1}{\partial x_0} & \frac{\partial \dot{x}_1}{\partial x_1} \end{bmatrix}
+
+Computethepartialderivatives:
+\frac{\partial \dot{x}_0}{\partial x_0} = 0, \quad \frac{\partial \dot{x}_0}{\partial x_1} = 1 \ \frac{\partial \dot{x}_1}{\partial x_0} = -g\cos(x_0), \quad \frac{\partial \dot{x}_1}{\partial x_1} = 0
+
+Therefore,
+\frac{\partial f}{\partial x} = \begin{bmatrix} 0 & 1 \ -g\cos(x_0) & 0 \end{bmatrix}
+
+### Jacobian with respect to `u`: The dynamics only depend linearly on `u`, so the Jacobian with respect to `u` is straightforward:
+\frac{\partial f}{\partial u} = \begin{bmatrix} 0 \ 1 \end{bmatrix}
+
+So, you can implement these computations in your code: ```python import numpy as np class ODEPendulum(ODE): def __init__(self, name=''): ODE.__init__(self, name) self.g = -9.81 def f(self, x, u, t, jacobian=False): dx = np.zeros(2) dx[0] = x[1] dx[1] = self.g * np.sin(x[0]) + u if jacobian: df_dx = np.array([ [0, 1], [-self.g * np.cos(x[0]), 0] ]) df_du = np.array([[0], [1]]) return dx, df_dx, df_du return dx ``` This code includes the computed Jacobians for the dynamics with respect to `x` and `u` in the `ODEPendulum` class.
+
+\end{document}
