@@ -27,8 +27,21 @@ n = nq+nv                       # state size
 m = conf.nu                     # control size
 
 # TODO implement a search strategy to select n_ics initial states to be checked (for example uniform random sampling, grid-based sampling, etc.)
-n_ics =           # TODO number of initial states to be checked
-x_0_arr =         # TODO matrix of the initial states to be checked (dim: n_ics x n)
+
+# TODO number of initial states to be checked
+# REVIEW Start with a random number
+
+n_ics = 100
+
+# TODO matrix of the initial states to be checked (dim: n_ics x n)
+x0_arr = np.zeros((n_ics, n))
+
+for i in range(n_ics):
+    # REVIEW check random sampling method
+    q_sample = np.random.uniform(conf.lowerPositionLimit, conf.upperPositionLimit)
+    v_sample = np.random.uniform(conf.lowerVelocityLimit, conf.upperVelocityLimit)
+
+    x0_arr[i] = [q_sample, v_sample]
 
 # Initialize viable and non-viable state lists
 viable_states = []
