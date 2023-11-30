@@ -106,7 +106,7 @@ for i in range(int(n_ics)):
 
         print('{} is a viable x0 - final velocity: {:.3f} rad/s'.format(x0, X[-1,1]))
         # Save viable states
-        viable_states.append(X)         # TODO Save viable states
+        viable_states.append(x0)         # TODO Save viable states
 
         # SAVE THE RESULTS
         if(not os.path.exists(conf.DATA_FOLDER)) and conf.save_warm_start:
@@ -161,7 +161,7 @@ for i in range(int(n_ics)):
     else:
         print('{} is a non-viable x0'.format(x0))
         # Save non-viable states
-        no_viable_states.append(problem.X)         # TODO Save non viable states
+        no_viable_states.append(x0)         # TODO Save non viable states
         
         
 

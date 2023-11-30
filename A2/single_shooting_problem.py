@@ -428,8 +428,8 @@ class SingleShootingProblem:
                                       {'type': 'eq', 
                                       'fun': self.compute_eq,
                                       'jac': self.compute_eq_jac}
-                                      ],)
-                    #  bounds=bnds)
+                                      ],
+                     bounds=bnds)
         else:
             cost_func = self.compute_cost_w_gradient
             # TODO Add the control bounds
@@ -442,8 +442,8 @@ class SingleShootingProblem:
                                       {'type': 'eq', 
                                       'fun': self.compute_eq,
                                       'jac': self.compute_eq_jac}
-                                      ],)
-                        # bounds=bnds)
+                                      ],
+                        bounds=bnds)
         return r
         
     def clbk(self, xk):

@@ -26,6 +26,7 @@ class OCPFinalCostState:
         de = v - self.v_des         # TODO implement penalty on the final velocity
         cost = 0.5*self.weight_vel*de.dot(de)         # TODO implement penalty on the final velocity
         grad = self.weight_vel*de        # TODO implement the gradient of the penalty on the final velocity
+        print(de.shape, cost.shape, grad.shape)
         return (cost, grad)
         
 class OCPRunningCostQuadraticControl:
