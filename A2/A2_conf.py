@@ -26,8 +26,8 @@ lowerPositionLimit = 3/4*np.pi      # min joint position
 upperPositionLimit = 5/4*np.pi      # max joint position
 upperVelocityLimit = 10             # min joint velocity
 lowerVelocityLimit = -10            # min joint velocity
-lowerControlBound    = -9.81        # lower bound joint torque
-upperControlBound    = 9.81         # upper bound joint torque
+lowerControlBound    = 5*-9.81        # lower bound joint torque
+upperControlBound    = 5*9.81         # upper bound joint torque
 
 activate_joint_bounds = 1           # joint pos/vel bounds
 
