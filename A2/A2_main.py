@@ -108,6 +108,10 @@ for i in range(int(n_ics)):
         # Save viable states
         viable_states.append(x0)         # TODO Save viable states
 
+        # REVIEW Try adding states visited by problem
+        for x in X:
+            viable_states.append(x)
+
         # SAVE THE RESULTS
         if(not os.path.exists(conf.DATA_FOLDER)) and conf.save_warm_start:
             os.mkdir(conf.DATA_FOLDER)
