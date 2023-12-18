@@ -29,7 +29,6 @@ m = conf.nu                     # control size
 # TODO implement a search strategy to select n_ics initial states to be checked (for example uniform random sampling, grid-based sampling, etc.)
 
 # TODO number of initial states to be checked
-# REVIEW Start with a random number
 
 n_ics = 1000
 
@@ -37,7 +36,6 @@ n_ics = 1000
 x0_arr = np.zeros((n_ics, n))
 
 for i in range(n_ics):
-    # REVIEW check random sampling method
     q_sample = np.random.uniform(conf.lowerPositionLimit, conf.upperPositionLimit)
     v_sample = np.random.uniform(conf.lowerVelocityLimit, conf.upperVelocityLimit)
 
