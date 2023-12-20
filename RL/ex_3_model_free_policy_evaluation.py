@@ -30,7 +30,7 @@ if __name__=="__main__":
     np.random.seed(RANDOM_SEED)
     
     ### --- Hyper paramaters
-    DO_PLOTS          = 1   # if True it plots the Value table every NPRINT iterations
+    DO_PLOTS          = 0   # if True it plots the Value table every NPRINT iterations
     
     ### --- Environment
     env_name = 'pendulum'
@@ -40,7 +40,7 @@ if __name__=="__main__":
         DISCOUNT          = 0.9     # Discount factor 
         N_EPISODS         = 1000    # number of episodes
         MAX_EPISOD_LENGTH = 100     # max length of an episode
-        LEARNING_RATES    = [0.5, 1.0]     # TD0 learning rates
+        LEARNING_RATES    = [0.5, 0.7, 1.0] #[0.5, 1.0]     # TD0 learning rates, replace with empty list to test only MC
         CONVERGENCE_THR   = 1e-5    # convergence threshold of policy evaluation
         NOISE_STDDEV      = 0.0     # standard deviation of the noise acting on the dynamics
         NPRINT            = 200     # print some info every NPRINT iterations
@@ -79,7 +79,7 @@ if __name__=="__main__":
         # set noise standard deviations
         env.pendulum.noise_stddev = NOISE_STDDEV
     
-    print("\nEstimate Value function with MC")
+    # print("\nEstimate Value function with MC")
     V_mc, err_mc = mc_policy_eval(env, DISCOUNT, policy, N_EPISODS, MAX_EPISOD_LENGTH,
                        V_real, DO_PLOTS, NPRINT)
     

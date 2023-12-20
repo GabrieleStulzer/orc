@@ -12,7 +12,7 @@ from sol.ex_2_value_iteration_sol import value_iteration
 MAX_ITERS       = 200     # Max number of iterations for the algorirthm
 VALUE_THR       = 1e-4    # convergence threshold
 NPRINT          = 3       # print some info every NPRINT iterations
-PLOT            = False   # where to plot stuff during the algorithm
+PLOT            = True   # where to plot stuff during the algorithm
 DISCOUNT        = 0.9     # Discount factor 
 nq=51   # number of discretization steps for the joint angle q
 nv=21   # number of discretization steps for the joint velocity v

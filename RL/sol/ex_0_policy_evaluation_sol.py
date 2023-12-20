@@ -30,5 +30,31 @@ def policy_eval(env, gamma, pi, V, maxIters, threshold, plot=False, nprint=1000)
     # Check for convergence using the difference between the current and previous V table
     # You can plot the V table with the function env.plot_V_table(V)
     # At the env return the V table
+
+    for i in range(maxIters):
+        V_old = np.copy(V)
+
+        for x in range(env.nx):
+            env.reset(x)
+            if callable(pi):
+                u = pi(env, x)
+            else:
+                u = pi[x]
+
+            n, c = env.step(u)
+
+            V[x] = c + gamma * V_old[n]
+        
+        # Check for convergence
+        err = np.max(np.abs(V - V_old))
+
+        if err < threshold:
+            print("Policy evaluation has converged with error: ", err)
+            break;
+        
+        if i % nprint == 0:
+            print("Policy evaluation - Iter", i, "error", err)
+            if plot:
+                env.plot_V_table(V)
     
     return V

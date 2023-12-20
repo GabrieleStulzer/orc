@@ -5,6 +5,7 @@ Created on Mon Nov 29 23:56:07 2021
 
 @author: adelprete
 """
+from random import randrange
 import numpy as np
 
 def mc_policy_eval(env, gamma, pi, nEpisodes, maxEpisodeLength, 
@@ -20,7 +21,9 @@ def mc_policy_eval(env, gamma, pi, nEpisodes, maxEpisodeLength,
         nprint: print some info every nprint iterations
     '''
     # create a vector N to store the number of times each state has been visited
+    N = np.zeros(env.nx)
     # create a vector C to store the cumulative cost associated to each state
+    C = np.zeros(env.nx)
     # create a vector V to store the Value
     # create a list V_err to store history of the error between real and estimated V table
     
@@ -33,6 +36,35 @@ def mc_policy_eval(env, gamma, pi, nEpisodes, maxEpisodeLength,
     # compute V_err as: mean(abs(V-V_real))
     V = np.zeros(env.nx);
     V_err = []
+
+
+    for e in range(nEpisodes):
+        env.reset() # Selects random state
+
+        X = []
+        costs = []
+
+        for i in range(maxEpisodeLength):
+            X.append(env.x)
+            u = pi(env, X[i])
+            x_next, c = env.step(u)
+            costs.append(c)
+        
+        J = 0
+        for i in range(len(X)-1, -1, -1):
+            J = costs[i] + gamma*J
+            x = X[i]
+            N[x] += 1
+            C[x] += J
+            V[x] = C[x] / N[x]
+        
+        V_err.append(np.mean(np.abs(V - V_real)))
+
+        if e%nprint == 0:
+            print("Iter", e, "V_err", V_err[e])
+            if plot:
+                env.plot_V_table(V)
+
     
     return V, V_err
 
@@ -59,7 +91,24 @@ def td0_policy_eval(env, gamma, pi, V0, nEpisodes, maxEpisodeLength,
     # simulate the system using the policy pi
     # at each simulation step update the Value of the current state         
     # compute V_err as: mean(abs(V-V_real))
-    V = np.zeros(env.nx);
+    V = np.copy(V0)
     V_err = []
+
+    for e in range(nEpisodes):
+        env.reset()
+
+        for i in range(maxEpisodeLength):
+            x = env.x
+            u = pi(env, x)
+            x_next, c = env.step(u)
+
+            V[x] += learningRate*(c + gamma*V[x_next] - V[x])
+
+        V_err.append(np.mean(np.abs(V - V_real)))
+
+        if e%nprint == 0:
+            print("Iter", e, "V_err", V_err[e])
+            if plot:
+                env.plot_V_table(V)
     
     return V, V_err

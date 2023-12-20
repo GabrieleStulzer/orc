@@ -37,4 +37,32 @@ def policy_iteration(env, gamma, pi, V, maxEvalIters, maxImprIters, value_thr, p
     # you can plot the policy with: env.plot_policy(pi)
     # You can plot the Value table with: env.plot_V_table(V)
     # At the end return the policy pi
+
+    Q = np.zeros(env.nu)
+
+    for i in range(maxImprIters):
+        V = policy_eval(env, gamma, pi, V, maxEvalIters, value_thr)
+
+        pi_old = np.copy(pi)
+
+        for x in range(env.nx):
+            for u in range(env.nu):
+                env.reset(x)
+                n, c = env.step(u)
+                Q[u] = c + gamma*V[n]
+
+            pi[x] = np.argmin(Q)
+        
+        err = np.max(np.abs(pi - pi_old))
+        if(err < policy_thr):
+            print("Policy Iteration has converged in", i, "iters with err", err)
+            break;
+
+        if i % nprint == 0:
+            print("Policy evaluation - Iter", i, "error", err)
+            if plot:
+                env.plot_policy(pi)
+                env.plot_V_table(V)
+
+
     return pi

@@ -30,4 +30,27 @@ def value_iteration(env, gamma, V, maxIters, value_thr, plot=False, nprint=1000)
     # You can get the absolute values of the element of an array using np.abs()
     # Check convergence based on how much the Value has changed since the previous loop
     # At the end return the Value table
+
+    Q = np.zeros(env.nu)
+
+    for i in range(maxIters):
+        V_old = np.copy(V)
+
+        for x in range(env.nx):
+            for u in range(env.nu):
+                env.reset(x)
+                n, c = env.step(u)
+                Q[u] = c + gamma*V[n]
+
+            V[x] = np.min(Q)
+        
+        err = np.max(np.abs(V - V_old))
+        if(err < value_thr):
+            print("Policy Iteration has converged in", i, "iters with err", err)
+            break;
+
+        if i % nprint == 0:
+            print("Policy evaluation - Iter", i, "error", err)
+            if plot:
+                env.plot_V_table(V)
     return V
