@@ -101,6 +101,6 @@ if __name__=='__main__':
     print("Average/min/max Value:", np.mean(V_opt), np.min(V_opt), np.max(V_opt)) 
     
     render_greedy_policy(env, Q, DISCOUNT)
-    plt.plot( np.cumsum(h_ctg)/range(1,NEPISODES) )
+    plt.plot( np.cumsum(h_ctg)/range(1,NEPISODES+1) )
     plt.title ("Average cost-to-go")
     plt.show()
