@@ -7,7 +7,7 @@ System dynamics and cost functions must be specified in child classes.
 """
 
 import numpy as np
-import orc.optimal_control.solutions.ddp_sol as sol
+import orc.optimal_control.solutions.ddp_sol_prof as sol
 
 class DDPSolver:
     

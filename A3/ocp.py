@@ -1,5 +1,7 @@
 import numpy as np
+import csv
 import casadi
+from multiprocessing import Pool
 
 class OcpSingleIntegrator:
 
@@ -48,26 +50,92 @@ class OcpSingleIntegrator:
 
         return self.opti.solve()
 
+class Parameters:
+    def __init__(self, index, N, dt, x_init, w_u, u_min, u_max):
+        self.index = index
+        self.N = N
+        self.dt = dt
+        self.w_u = w_u
+        self.u_min = u_min
+        self.u_max = u_max
+        self.x_init = x_init
+    
+    def setXInit(self, x_init):
+        self.x_init = x_init
+
+    def __str__(self) -> str:
+        return f"Index = {self.index} - Parameters(N={self.N}, dt={self.dt}, x_init={self.x_init}, w_u={self.w_u}, u_min={self.u_min}, u_max={self.u_max})"
+
+    
+def solveOneProblem(parameters: Parameters):
+    # print(f"Solving problem with parameters: {parameters}")
+    ocp = OcpSingleIntegrator(parameters.dt, parameters.w_u, parameters.u_min, parameters.u_max)
+    sol = ocp.solve(parameters.x_init, parameters.N)
+    # print(f"==== {parameters.index} solved\n")
+    return (parameters.x_init, sol.value(ocp.cost))
 
 if __name__=="__main__":
     import matplotlib.pyplot as plt
-    N = 10          # horizon size
-    dt = 0.1        # time step
-    x_init = -0.8   # initial state
+    N = 20          # horizon size
+    dt = 0.01        # time step
+    x_init = -1.0   # initial state
     w_u = 1e-2
     u_min = -1      # min control input
     u_max = 1       # max control input
+    PLOT = False
+    SAMPLES = 20000
+
+    params = [Parameters(i, N, dt, np.random.uniform(-2.2, 2.0), w_u, u_min, u_max) for i in range(SAMPLES)]
+
+    with Pool(6) as p:
+        sols = p.map(solveOneProblem, params)
+    
+    with open('data.csv', 'w') as f:
+        # create the csv writer
+        writer = csv.writer(f)
+
+        # write a header row
+        writer.writerow(['x_init', 'cost'])
+
+        for sol in sols:
+            row = [sol[0], sol[1]]
+            writer.writerow(row)
+    
+    
+
+    # for i in range(10):
+    #     x_init = np.random.uniform(-2.2, 2.0)
+    #     print(f"Random x_init: {x_init}")
 
 
-    ocp = OcpSingleIntegrator(dt, w_u, u_min, u_max)
-    sol = ocp.solve(x_init, N)
-    print("Optimal value of x:\n", sol.value(ocp.x))
+    #     ocp = OcpSingleIntegrator(dt, w_u, u_min, u_max)
+    #     sol = ocp.solve(x_init, N)
+    #     print("Optimal value of x:\n", sol.value(ocp.x))
+    #     costs = [(sol.value(ocp.x[i]), sol.value(ocp.running_costs[i])) for i in range(N+1)]
+    #     print(costs)
 
-    X = np.linspace(-2.2, 2.0, 100)
-    costs = [sol.value(ocp.running_costs[0], [ocp.x==x_val]) for x_val in X]
-    plt.plot(X, costs)
-    for i in range(N+1):
-        plt.plot(sol.value(ocp.x[i]), sol.value(ocp.running_costs[i]), 
-                'xr', label='x_'+str(i))
-    plt.legend()
-    plt.show()
+    #     x1, y1 = costs[0]
+    #     x2, y2 = costs[-1]
+    #     distance = np.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    #     print(f"Value function (Euclidean distance 2D): {distance}")
+
+    #      # Get the final optimal value
+    #     final_optimal_value = sol.value(ocp.x[N])
+
+    #     # Calculate the Euclidean distance between initial guess and final optimal value
+    #     value_function = np.linalg.norm(final_optimal_value - x_init)
+
+    #     print(f"Value function (Euclidean distance): {value_function}")
+
+    #     print(f"Ocp Cost: {sol.value(ocp.cost)}")
+
+
+    #     if PLOT:
+    #         X = np.linspace(-2.2, 2.0, 100)
+    #         costs = [sol.value(ocp.running_costs[0], [ocp.x==x_val]) for x_val in X]
+    #         plt.plot(X, costs)
+    #         for i in range(N+1):
+    #             plt.plot(sol.value(ocp.x[i]), sol.value(ocp.running_costs[i]), 
+    #                     'xr', label='x_'+str(i))
+    #         plt.legend()
+    #         plt.show()
