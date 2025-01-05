@@ -2,7 +2,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from datetime import datetime
 
-def train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_index, tb_writer):
+def train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_index, tb_writer, device):
     running_loss = 0.
     last_loss = 0.
 
@@ -17,10 +17,10 @@ def train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_index, tb_wri
         optimizer.zero_grad()
 
         # Make predictions for this batch
-        outputs = model(inputs.view(-1, 1).to("mps", dtype=torch.float32))
+        outputs = model(inputs.view(-1, 1).to(device, dtype=torch.float32))
 
         # Compute the loss and its gradients
-        loss = loss_fn(outputs, labels.to("mps", dtype=torch.float32))
+        loss = loss_fn(outputs, labels.to(device, dtype=torch.float32))
         loss.backward()
 
         # Adjust learning weights
@@ -37,7 +37,7 @@ def train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_index, tb_wri
 
     return last_loss
 
-def train(train_loader, val_loader, model, loss_fn, optimizer, epochs):
+def train(train_loader, val_loader, model, loss_fn, optimizer, epochs, device):
     # Initializing in a separate cell so we can easily add more epochs to the same run
     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
     writer = SummaryWriter('runs/fashion_trainer_{}'.format(timestamp))
@@ -50,7 +50,7 @@ def train(train_loader, val_loader, model, loss_fn, optimizer, epochs):
 
         # Make sure gradient tracking is on, and do a pass over the data
         model.train(True)
-        avg_loss = train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_number, writer)
+        avg_loss = train_one_epoch(train_loader, optimizer, model, loss_fn, epoch_number, writer, device)
 
 
         running_vloss = 0.0
@@ -62,8 +62,8 @@ def train(train_loader, val_loader, model, loss_fn, optimizer, epochs):
         with torch.no_grad():
             for i, vdata in enumerate(val_loader):
                 vinputs, vlabels = vdata
-                voutputs = model(vinputs.view(-1, 1).to("mps", dtype=torch.float32))
-                vloss = loss_fn(voutputs, vlabels.to("mps", dtype=torch.float32))
+                voutputs = model(vinputs.view(-1, 1).to(device, dtype=torch.float32))
+                vloss = loss_fn(voutputs, vlabels.to(device, dtype=torch.float32))
                 running_vloss += vloss
 
         avg_vloss = running_vloss / (i + 1)

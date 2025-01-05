@@ -71,7 +71,7 @@ def solveOneProblem(parameters: Parameters):
     # print(f"Solving problem with parameters: {parameters}")
     ocp = OcpSingleIntegrator(parameters.dt, parameters.w_u, parameters.u_min, parameters.u_max)
     sol = ocp.solve(parameters.x_init, parameters.N)
-    # print(f"==== {parameters.index} solved\n")
+    print(f"==== {parameters.index} solved\n")
     return (parameters.x_init, sol.value(ocp.cost))
 
 if __name__=="__main__":
@@ -83,14 +83,14 @@ if __name__=="__main__":
     u_min = -1      # min control input
     u_max = 1       # max control input
     PLOT = False
-    SAMPLES = 20000
+    SAMPLES = 2
 
     params = [Parameters(i, N, dt, np.random.uniform(-2.2, 2.0), w_u, u_min, u_max) for i in range(SAMPLES)]
 
-    with Pool(6) as p:
+    with Pool(10) as p:
         sols = p.map(solveOneProblem, params)
     
-    with open('data.csv', 'w') as f:
+    with open('data_2.csv', 'w') as f:
         # create the csv writer
         writer = csv.writer(f)
 

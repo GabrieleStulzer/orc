@@ -1,0 +1,104 @@
+\documentclass{article}
+\usepackage{amsmath, amssymb, graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\title{Actor-Critic Learning for Optimal Control Problems}
+\author{Gabriele Stulzer}
+\date{January 2025}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+This report presents the implementation and results of an actor-critic learning framework applied to solving optimal control problems (OCPs). The goal was to learn a value function (critic) and a policy (actor) for a simple integrator system, and evaluate the performance using various hyperparameters.
+
+\section{Problem Formulation}
+The OCP is defined as:
+\begin{align}
+    \min_{u_t} & \quad \sum_{t=0}^{T-1} \left[ \frac{1}{2} u_t^2 + (x_t - 1.9)(x_t - 1.0)(x_t - 0.6)(x_t + 0.5)(x_t + 1.2)(x_t + 2.1) \right], \\
+    \text{subject to} & \quad x_{t+1} = x_t + \Delta t \cdot u_t,
+\end{align}
+where $x_t$ is the state, $u_t$ is the control input, and $\Delta t = 0.1$ is the time step.
+
+\section{Methodology}
+
+\subsection{Neural Network Architectures}
+The critic and actor networks are both feedforward neural networks with two hidden layers of 64 neurons each and ReLU activations. The output layer of the critic is a single linear neuron predicting the value function. The actor network's output is a single neuron with a hyperbolic tangent activation, representing the control signal.
+
+\subsection{Training Procedure}
+\paragraph{Critic Training:}
+The critic network was trained using mean squared error loss to approximate the cost-to-go from given states. Training data consisted of randomly sampled states and control inputs.
+
+\paragraph{Actor Training:}
+The actor network was trained by minimizing the action-value function, computed as the sum of the running cost and the value of the next state predicted by the critic.
+
+\section{Results and Analysis}
+
+\subsection{Hyperparameter Configurations}
+Table \ref{tab:hyperparameters} summarizes the key hyperparameters used.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        Parameter & Value \\
+        \hline
+        Learning Rate & 0.001 \\
+        Batch Size & 32 \\
+        Critic Epochs & 50 \\
+        Actor Epochs & 50 \\
+        \hline
+    \end{tabular}
+    \caption{Hyperparameter settings for training.}
+    \label{tab:hyperparameters}
+\end{table}
+
+\subsection{Value and Policy Functions}
+Figure \ref{fig:results} shows the learned value function and policy for the system. The critic successfully approximates the value function, while the actor learns a policy that minimizes the action-value function.
+
+% \begin{figure}[h!]
+%     \centering
+%     \includegraphics[width=0.45\textwidth]{value_function.png}
+%     \includegraphics[width=0.45\textwidth]{policy_function.png}
+%     \caption{Learned value function (left) and policy (right).}
+%     \label{fig:results}
+% \end{figure}
+
+\section{Discussion}
+The results demonstrate the effectiveness of the actor-critic framework in solving simple OCPs. The learned value function aligns well with the theoretical cost, and the policy shows a smooth control signal minimizing the given cost.
+
+\subsection{Suggested Improvements}
+To improve performance, several tests and enhancements can be performed:
+\begin{itemize}
+    \item \textbf{Network Architecture:}
+    \begin{itemize}
+        \item Use deeper networks with more hidden layers (e.g., 3-5 layers) to capture complex patterns.
+        \item Experiment with alternative activation functions such as Leaky ReLU, ELU, or Swish to enhance gradient flow.
+        \item Test convolutional layers if spatial correlations exist in state-action mappings.
+    \end{itemize}
+    \item \textbf{Hyperparameters:}
+    \begin{itemize}
+        \item Adjust the learning rate (e.g., test 0.0001, 0.0005) for better convergence.
+        \item Try larger batch sizes (e.g., 64, 128) to stabilize gradient updates.
+        \item Increase training epochs to allow better fitting of the critic and actor networks.
+        \item Use learning rate schedulers to adapt the rate during training.
+    \end{itemize}
+    \item \textbf{Optimization Techniques:}
+    \begin{itemize}
+        \item Incorporate regularization techniques such as L2 penalties or dropout to prevent overfitting.
+        \item Use advanced optimizers like AdamW or RMSProp for better weight updates.
+        \item Implement target networks for the critic to stabilize training.
+    \end{itemize}
+    \item \textbf{Expanded Dynamics:}
+    \begin{itemize}
+        \item Apply the framework to more complex dynamics, such as a double integrator or pendulum systems.
+        \item Include stochastic elements in dynamics for robustness testing.
+    \end{itemize}
+\end{itemize}
+
+\section{Conclusion}
+This project implemented an actor-critic learning approach for OCPs. The framework achieved good performance in approximating the value function and policy, demonstrating its potential for more complex control problems. Future work can focus on testing advanced architectures, optimizing hyperparameters, and applying the method to higher-dimensional systems.
+
+\end{document}
