@@ -1,0 +1,2 @@
+N,dt,x_interval,w_u,u_min,u_max
+50,0.1,"[-3, 3]",0.01,-1,1

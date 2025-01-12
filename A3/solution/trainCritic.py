@@ -12,9 +12,9 @@ from torch.utils.data import Dataset, DataLoader
 
 
 from ValueFunctionDataset import OcpDataset
-from Model import Critic
+from Critic.Model import Critic
 
-critic = None
+critic = Critic(3).to('cuda')
 
 def save_training_params(params, filename='training_params.json'):
     with open(filename, 'w') as f:
@@ -24,7 +24,6 @@ def train(num_epochs, lr, dataset_filename):
     dataset = OcpDataset(dataset_filename)
     dataloader = DataLoader(dataset, batch_size=128, shuffle=True)
 
-    critic = Critic().to('cuda')
     criterion = nn.MSELoss()
     optimizer = optim.Adam(critic.parameters(), lr=lr)
 
@@ -51,11 +50,14 @@ if __name__ == "__main__":
     parser.add_argument('--lr', type=float, default=1e-2, help='Learning rate for the optimizer')
     parser.add_argument('--dataset', type=str, default='dataset_v2.csv', help='Filename of the dataset')
     parser.add_argument('--project', type=str, default='critic_training',help='Filename to save the trained model')
+    parser.add_argument('--version', type=int, default='1',help='Version of the Critic model')
     args = parser.parse_args()
+
+    critic = Critic(args.version).to('cuda')
 
     # Create a new project folder
     project = args.project
-    project = f"{args.project}_{timestamp}"
+    project = f"critic_runs/{args.project}_{timestamp}"
     os.makedirs(project, exist_ok=True)
 
     # Save training parameters to a file
@@ -63,9 +65,18 @@ if __name__ == "__main__":
         'epochs': args.epochs,
         'learning_rate': args.lr,
         'dataset': args.dataset,
-        'project': args.project
+        'project': args.project,
+        'version': args.version
     }
-    save_training_params(training_params, project + '/training_params.json')
 
+    # Get time counter
+    start_time = datetime.datetime.now()
     train(args.epochs, args.lr, args.dataset)
-    save(args.project)
+    end_time = datetime.datetime.now()
+
+    training_params['start_time'] = start_time.strftime('%Y-%m-%d %H:%M:%S')
+    training_params['end_time'] = end_time.strftime('%Y-%m-%d %H:%M:%S')
+    training_params['duration'] = str(end_time - start_time)
+
+    save_training_params(training_params, project + '/training_params.json')
+    save(project)

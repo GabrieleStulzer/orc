@@ -1,0 +1,10 @@
+{
+    "epochs": 500,
+    "learning_rate": 0.001,
+    "dataset": "dataset/dataset_v2.csv",
+    "project": "critic_v3_500_v2_00001",
+    "start_time": "2025-01-07 19:26:34",
+    "end_time": "2025-01-07 20:45:12",
+    "duration": "1:18:37.756342",
+    "version": 3
+}

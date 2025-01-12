@@ -1,0 +1,6 @@
+{
+    "epochs": 100,
+    "learning_rate": 0.001,
+    "dataset": "dataset/dataset_v2.csv",
+    "project": "critic_100_v2_00002"
+}

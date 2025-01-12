@@ -16,7 +16,7 @@ from Critic.Model import Critic
 from Actor.Model import Actor
 
 actor = Actor().to('cuda')
-critic = Critic().to('cuda')
+critic = Critic(3).to('cuda')
 
 delta_t = 0.1
 
