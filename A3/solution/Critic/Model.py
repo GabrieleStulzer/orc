@@ -13,6 +13,8 @@ class Critic(nn.Module):
             self.net = Critic.v3()
         elif version == 4:
             self.net = Critic.v4()
+        elif version == 5:
+            self.net = Critic.v5()
         else:
             self.net = Critic.v1()
         
@@ -52,10 +54,40 @@ class Critic(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 1)
         )
-    
+
     def v4():
         return nn.Sequential(
+            nn.Linear(1, 64),
+            nn.ReLU(),
+            nn.Linear(64, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 1)
+        )
+    
+    # def v4():
+    #     return nn.Sequential(
+    #         nn.Linear(1, 128),
+    #         nn.ReLU(),
+    #         nn.Linear(128, 128),
+    #         nn.ReLU(),
+    #         nn.Linear(128, 128),
+    #         nn.ReLU(),
+    #         nn.Linear(128, 128),
+    #         nn.ReLU(),
+    #         nn.Linear(128, 1)
+    #     )
+
+    def v5():
+        return nn.Sequential(
             nn.Linear(1, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
+            nn.ReLU(),
+            nn.Linear(128, 128),
             nn.ReLU(),
             nn.Linear(128, 128),
             nn.ReLU(),

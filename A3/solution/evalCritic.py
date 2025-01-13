@@ -73,3 +73,11 @@ plt.ylabel('Predicted V(x0)')
 plt.title('Critic Performance')
 plt.plot([V_true.min(), V_true.max()], [V_true.min(), V_true.max()], 'r--')
 plt.show()
+
+# If training_params.json contains the key losses, plot the losses
+if 'losses' in training_params:
+    plt.plot(training_params['losses'])
+    plt.xlabel('Epochs')
+    plt.ylabel('MSE Loss')
+    plt.title('Critic Training Loss')
+    plt.show()

@@ -1,9 +1,0 @@
-{
-    "epochs": 2,
-    "learning_rate": 0.001,
-    "dataset": "dataset/dataset_v2.csv",
-    "project": "test",
-    "start_time": "2025-01-06 17:23:31",
-    "end_time": "2025-01-06 17:23:44",
-    "duration": "0:00:13.488041"
-}
